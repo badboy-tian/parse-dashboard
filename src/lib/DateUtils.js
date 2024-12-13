@@ -141,19 +141,20 @@ export function yearMonthDayFormatter(date) {
   });
 }
 
-export function yearMonthDayTimeFormatter(date, timeZone) {
+export function yearMonthDayTimeFormatter(date, useUTC) {
   const options = {
     year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
     hour12: false,
+    timeZone: useUTC ? 'UTC' : undefined
   };
-  if (timeZone) {
-    options.timeZoneName = 'short';
-  }
-  return date.toLocaleDateString('en-US', options);
+  return date.toLocaleString('en-US', options)
+    .replace(',', '')  // 移除日期和时间之间的逗号
+    .replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2'); // 转换为 yyyy-MM-dd 格式
 }
 
 export function getDateMethod(local, methodName) {
@@ -170,4 +171,23 @@ export function pad(number) {
     r = '0' + r;
   }
   return r;
+}
+
+export function formatDateTime(date, useLocalTime = false) {
+  if (!date) return '';
+  
+  const d = new Date(date);
+  
+  // 根据useLocalTime决定使用本地时间还是UTC时间
+  const year = useLocalTime ? d.getFullYear() : d.getUTCFullYear();
+  const month = (useLocalTime ? d.getMonth() : d.getUTCMonth()) + 1;
+  const day = useLocalTime ? d.getDate() : d.getUTCDate();
+  const hours = useLocalTime ? d.getHours() : d.getUTCHours();
+  const minutes = useLocalTime ? d.getMinutes() : d.getUTCMinutes();
+  const seconds = useLocalTime ? d.getSeconds() : d.getUTCSeconds();
+
+  // 补零函数
+  const pad = (num) => String(num).padStart(2, '0');
+
+  return `${year}-${pad(month)}-${pad(day)} ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
