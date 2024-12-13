@@ -28,7 +28,7 @@ export default class BrowserRow extends Component {
     switch(type) {
       case 'Date':
         return formatDateTime(value, this.props.useLocalTime);
-      // ... 其他 case
+      // ... other cases
     }
   }
 
